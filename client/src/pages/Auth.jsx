@@ -9,8 +9,11 @@ import axios from "axios";
 import { ServerUrl } from "../constants/config";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
+import { useNavigate } from "react-router-dom";   // ← change 1
+
 function Auth({ isModel = false }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();   // ← change 2
 
   const handleGoogleAuth = async () => {
     try {
@@ -31,11 +34,13 @@ function Auth({ isModel = false }) {
       }
 
       dispatch(setUserData(userData));
+      navigate("/");   // ← change 3: login ke baad home pe bhejo
     } catch (error) {
       console.log(error);
       dispatch(setUserData(null));
     }
   };
+
   return (
     <div
       className={`

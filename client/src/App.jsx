@@ -1,8 +1,7 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom"; // added useNavigate
 import Home from "./pages/Home";
 import Auth from "./pages/Auth.jsx";
-import { useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUserData } from "./redux/userSlice";
@@ -11,10 +10,13 @@ import InterviewHistory from "./pages/InterviewHistory";
 import Pricing from "./pages/Pricing";
 import InterviewReport from "./pages/InterviewReport";
 
-export const ServerUrl = "https://interviewiq-fgkq.onrender.com";
+// Use environment variable with fallback to production URL
+export const ServerUrl = import.meta.env.VITE_SERVER_URL || "https://prohire-ai.onrender.com";
 
 function App() {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // new
+
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -25,10 +27,15 @@ function App() {
       } catch (error) {
         console.log(error);
         dispatch(setUserData(null));
+        // Added: redirect to auth on 401
+        if (error.response?.status === 401) {
+          navigate("/auth");
+        }
       }
     };
     getUser();
-  }, [dispatch]);
+  }, [dispatch, navigate]); // added navigate dependency
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />
